@@ -1,0 +1,44 @@
+{{template "header" .}}
+<body>
+    <div class="container-fluid d-flex w-100 h-100 text-center mx-auto flex-column" >
+        <header class="masthead mb-auto">
+            <div class="inner mb-5">
+                <h1 class="head shadow">Welcome to CSV Editor</h1>
+            </div>
+            <div class="d-flex justify-content-center">            
+                <form method="POST" action="/findCSV" enctype="multipart/form-data" id="main-menu">
+                    <div class="form-group">
+                        <label for="selectFile">Select a CSV file to upload</label>
+                        <input class="form-control-file mb-3 bg-secondary border border-dark rounded" type="file" name="Upload" id="Upload" required>
+                        <button class="btn btn-sm btn-dark my-3" id="selectFile" type="submit">Load CSV File</button>    
+                    </div>
+                </form>
+            </div>
+        </header> 
+    </div> 
+    <script>
+     var fileName = $( "#Upload" ).val()
+        fileName = {{.FileName}}
+        $( "#filename" ).innerHTML = fileName
+        if (fileName === "" ){
+            $( ".show-save" ).removeClass("active");
+            $( ".show-save" ).hide();
+        };
+        $( "#view" ).click(function() {
+        if (fileName === "" ) {
+            alert( "You need to load a CSV file first!" );
+            }
+        });
+       
+        $( "#row-page" ).click(function() {
+            if (fileName === "" ) {
+            alert( "You need to load a CSV file first!" );
+            }
+        });
+    </script>   
+</body>
+{{template "footer"}}
+
+
+
+

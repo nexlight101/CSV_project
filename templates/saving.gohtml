@@ -1,0 +1,54 @@
+{{template "header" .}}
+<body>
+    <div class="container-fluid d-flex w-100 h-100 text-center mx-auto flex-column" >
+        <header class="masthead mb-auto">
+            <div class="inner mb-5">
+                <h1 class="head shadow">CSV save to file</h1>
+            </div>
+            <div class="d-flex justify-content-center">            
+                <form  class="flex-column" method="POST" action="/saveRecord" enctype="multipart/form-data" id="main-menu">
+                    <div class="row">
+                        <label  class="mb-0" for="SaveName">Provide a CSV file name to export...</label>
+                        <div class="input-group mb-3">
+                            {{/* <div class="input-group-prepend">
+                                <span class="input-group-text" id="fileInput"></span>
+                            </div> */}}
+                            <input class="form-control border border-dark rounded" type="text" name="SaveName" id="SaveName" placeholder="{{.FileName}}" aria-describedby="fileInput">
+                            <button class="btn btn-sm btn-dark ml-1" id="FormControlFile1" type="submit">Download CSV File</button>    
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <a class="btn btn-dark" href="/mainV" role="button">Return</a>
+            </div>    
+        </header> 
+    </div> 
+    <script>
+    var fileName = $( "#Upload" ).val()
+    $( "#filename" ).innerHTML = fileName
+
+        $( "#view" ).click(function() {
+        if (fileName === "" ) {
+            alert( "You need to load a CSV file first!" );
+            }
+        });
+
+        $( "#row-page" ).click(function() {
+            if (fileName === "" ) {
+            alert( "You need to load a CSV file first!" );
+            }
+        });
+
+        $( "#col-page" ).click(function() {
+            if (fileName === "" ) {
+            alert( "You need to load a CSV file first!" );
+            }
+        });
+    </script>   
+</body>
+{{template "footer"}}
+
+
+
+

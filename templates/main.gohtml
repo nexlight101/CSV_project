@@ -1,0 +1,273 @@
+{{template "header" .}}
+<body>
+    <div class="container-fluid d-flex w-100 h-100 text-center mx-auto flex-column" >
+        <header class="masthead mb-auto">
+            <div class="inner">
+                <h1 class="head shadow">CSV Editor page</h1>
+                <p class="exp">Provides editing for csv file contents</p>
+        </header>
+    </div>
+    <div class="flex-row">
+        <div class="table-responsive">
+            <div id="expand">
+                <table id="table1" class="table table-bordered table-hover table-sm">
+                    <thead class="thead-dark text-center">
+                        <tr>
+                        {{range .ColHX}}
+                            <th id="small-input">
+                                <input class="text-center input-label" type="text" placeholder="{{.}}" readonly>
+                            </th>
+                        {{end}}
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        <tr>
+                            {{range .InpHX}}
+                            <td id="small-padding">
+                                {{.}}
+                            </td>
+                            {{end}}
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>     
+        </div> 
+            <div class="text-center mx-auto my-2">
+                <button type="button" id="target" class="btn btn-sm btn-dark" data-toggle="tooltip" data-placement="top" title="Populate cells above first" onclick="addHtmlTableRow();">Add Row</button>
+                <button type="button" id="target2" class="btn btn-sm btn-dark" data-toggle="tooltip" data-placement="top" title="Increase maximum columns" onclick="addHtmlTableColumn();">Add Column</button>
+                <button type="button" class="btn btn-sm btn-dark" data-toggle="tooltip" data-placement="top" title="Select row below in table" onclick="editHtmlTableSelectedRow();">Edit/Change</button>
+                <button type="button" class="btn btn-sm btn-dark" data-toggle="tooltip" data-placement="top" title="Select row below in table" onclick="removeSelectedRow();">Remove</button>
+            </div>
+        </div>     
+        <div id="table2" class="table-responsive">     
+            <table id="table" class="table table-bordered table-hover table-sm">
+                <thead class="thead-dark text-center">
+                    {{range .ColHX}}
+                    {{.}}
+                    {{end}}
+                </thead>
+                <tbody>
+                    {{range .RowIX}}
+                    {{.}}
+                    {{end}}
+                </tbody>   
+            </table>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var rIndex,
+            table = document.getElementById('table');
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        // AXAJ code for add row
+        function addRow(newRowAdded){
+            var dataIn = JSON.stringify(newRowAdded)
+            console.log(dataIn)
+            $('#target').html('sending..');
+            var request = $.ajax({
+                url: "/addNewRecord",
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: dataIn
+            });
+            request.done (function (msg) {
+                console.log(msg)
+                $('#target').html(msg);
+                    location.reload(true);
+            });
+            request.fail (function( jqXHR, textStatus ) {
+                alert( "Request failed: " + textStatus );
+            });
+        };
+        // AXAJ code for add Column
+        function addCol(){
+            $('#target').html('adding column..');
+            var request = $.ajax({
+                url: "/addNewColumn",
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: null
+            });
+            request.done (function (msg) {
+                console.log(msg)
+                $('#target').html(msg);
+                    location.reload(true);
+            });
+            request.fail (function( jqXHR, textStatus ) {
+                alert( "Request failed: " + textStatus );
+            });
+        };
+
+        // AXAJ code for delete row
+        function delRow(rowDeleteI){
+            rowDeleteI = {"index":String(rowDeleteI)}
+            var dataD = JSON.stringify(rowDeleteI)
+            console.log(dataD)
+            $('#target').html('sending..');
+            var request = $.ajax({
+                url: "/deleteRecord",
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: dataD
+            });
+            request.done (function (msg) {
+                console.log(msg)
+                $('#target').html(msg);
+                {{/* $('#target').click(function() { */}}
+                    location.reload(true);
+                {{/* }); */}}
+            });
+            request.fail (function( jqXHR, textStatus ) {
+                alert( "Request failed: " + textStatus );
+            });
+        };
+
+
+        // AXAJ code for editing row
+        function editRow(rowEditI){
+            var dataIn = JSON.stringify(rowEditI)
+            console.log(dataIn)
+            $('#target').html('sending..');
+            var request = $.ajax({
+                url: "/editRecord",
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: dataIn
+            });
+            request.done (function (msg) {
+                console.log(msg)
+                $('#target').html(msg);
+                {{/* $('#target').click(function() { */}}
+                    location.reload(true);
+                {{/* }); */}}
+            });
+            request.fail (function( jqXHR, textStatus ) {
+                alert( "Request failed: " + textStatus );
+            });
+        };
+
+        // display selected row data into input text
+        function selectedRowToInput(){
+            for(var i = 1; i < table.rows.length; i++){
+                table.rows[i].onclick = function(){
+                    rIndex = this.rowIndex;
+                    {{range $index, $element:= .Script}}
+                    document.getElementById('{{$element}}').value = this.cells[{{$index}}].innerHTML;
+                    {{end}}
+                };
+            }
+        }
+        selectedRowToInput();
+
+    // add Row
+        function addHtmlTableRow()
+        {
+            // get the table by id
+            // create a new row and cells
+            // get value from input text
+            // set the values into row cell's
+            {{/* if(!checkEmptyInput()){ */}}
+            var newRow = table.insertRow(table.length),
+                // New cells inside new row
+                {{range .JSIX}}
+                    {{.}}
+                {{end}}
+                    // Field names for new row to be added
+                {{range $index1, $element1 := .JSRX}}
+                        {{$element1.CellNameJS}} = document.getElementById("{{$element1.CellName}}").value{{$element1.EndMarker}}
+                {{end}}
+
+                {{range $index2, $element2 := .JSRX}}
+                    var newLenght = table.rows.length-1
+                    {{if eq $index2 0}}
+                        var newLenghtS = String(newLenght)
+                        rc1 = newLenghtS;
+                        {{.Cell}}.innerHTML = {{.CellNameJS}};
+                    {{end}}
+                    {{if ne $index2 0}}
+                        {{.Cell}}.innerHTML = {{.CellNameJS}};
+                    {{end}}
+                {{end}}
+
+            newRowAdded =  addAJAX(newLenghtS)
+            addRow(newRowAdded) //call AJAX
+            // call the function to set the event to the new row
+            selectedRowToInput();
+        }
+        // add Column
+        function addHtmlTableColumn()
+        {
+            newColAdded =  addAJAX()
+            addCol(newColAdded) //call AJAX
+        }
+           // Delete row
+           function removeSelectedRow(){
+                //Delete the table row
+                var index = rIndex
+                table.deleteRow(rIndex);
+                // clear input text
+                for(var i = 1; i < table.rows.length; i++){
+                    rIndex = this.rowIndex;
+                    {{range $index, $element:= .Script}}
+                    document.getElementById('{{$element}}').value = "";
+                    {{end}}
+                };
+                //Send ajax to server
+                console.log(index)
+                delRow(index)
+            }
+
+            // Edit row
+            function editHtmlTableSelectedRow(){
+                //Edit the table row
+                var index = rIndex;
+                {{range $index3, $element3 := .JSRX}}
+                    {{if eq $index3 0}}
+                        var {{$element3.CellNameJS}} = document.getElementById("{{$element3.CellNameJS}}").value{{$element3.EndMarker}}
+                    {{end}}
+                    {{if ne $index3 0}}
+                            {{$element3.CellNameJS}} = document.getElementById("{{$element3.CellNameJS}}").value{{$element3.EndMarker}}
+                    {{end}}
+                {{end}}
+                {{range $index4, $element4 := .JSRX}}
+                    table.rows[rIndex].cells[{{$index4}}].innerHTML = {{$element4.CellNameJS}};
+                {{end}}
+                var newLenghtS = index
+                editRowD = addAJAX(newLenghtS)
+                //Send ajax to server
+                console.log(editRowD)
+                editRow(editRowD)
+            }
+
+            // addAJAX builds JSON for AJAX add & edit
+            function addAJAX(newLenghtS){
+                var jsonText = '{"r":['
+                for(var j = 1; j < {{.ColCount}} ; j++){
+                    if(j === 1){
+                        jsonText += '"' + newLenghtS + '",'
+                    }else{
+                        var cellName = "rc" + j
+                        var contents = document.getElementById(cellName).value
+                        jsonText += '"' + contents + '",'
+                    }
+                }
+                var jsonTextM = jsonText.slice(0,-1);
+                jsonTextM += ']}';
+                console.log(jsonTextM)
+                var newRowAdded = JSON.parse(jsonTextM)
+                return newRowAdded
+            }
+    </script>
+</body>
+{{template "footer"}}
+
+
+
+

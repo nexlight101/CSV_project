@@ -1,0 +1,31 @@
+{{template "header" .}}
+<body id="scroll">
+    <div class="container-fluid d-flex w-100 h-100 text-center mx-auto flex-column" >
+        <header class="masthead mb-auto">
+            <div class="inner">
+                <h1 class="head shadow">CSV Viewer</h1>
+                <p class="exp mb-0">Displays CSV file contents</p>
+                <p class="exp mb-0">(Select CSV Functions to edit CSV!)</p>
+        </header>
+    </div>
+    </div>      
+    <div id="table2" class="table-responsive">
+        <table id="table" class="table table-bordered table-hover table-sm">
+            <thead class="thead-dark text-center">
+                {{range .ColHX}}
+                {{.}}
+                {{end}}
+            </thead>
+            <tbody>
+                {{range .RowIX}}
+                {{.}}
+                {{end}}
+            </tbody>   
+        </table>
+    </div>        
+</body>
+{{template "footer"}}
+
+
+
+
